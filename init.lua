@@ -22,11 +22,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
 
   -- themes
-  { "folke/tokyonight.nvim",
-    priority = 1000 ,
-    config = true,
-    opts = ...
-  },
+  { "ellisonleao/gruvbox.nvim", priority = 1000 , config = true, opts = ...},
 
   {
     "mbbill/undotree"
@@ -36,22 +32,30 @@ require('lazy').setup({
   { 'nvim-telescope/telescope.nvim',
     dependencies = {  'nvim-lua/popup.nvim', 'nvim-lua/plenary.nvim'  }
   },
+
   {
     "nvim-neotest/nvim-nio"
   },
+
   {'nvim-telescope/telescope-ui-select.nvim' },
+
   {'nvim-telescope/telescope-fzf-native.nvim',
     build = 'make',
   },
+
   { "nvim-telescope/telescope-file-browser.nvim" },
   -- git and github integration
   {
     'lewis6991/gitsigns.nvim',
   },
+
   { 'TimUntersberger/neogit', dependencies = 'nvim-lua/plenary.nvim' },
   -- Highlight, edit, and navigate code using a fast incremental parsing library
   {
-    'nvim-treesitter/nvim-treesitter', build = ':TSUpdate',
+    'nvim-treesitter/nvim-treesitter', build = ':TSUpdate'
+  },
+
+  {
     'nvim-treesitter/nvim-treesitter-textobjects'
   },
 
@@ -66,6 +70,7 @@ require('lazy').setup({
       -- 'j-hui/fidget.nvim',
     },
   },
+
   -- debugging
   {
     'mfussenegger/nvim-dap',
@@ -206,7 +211,7 @@ vim.wo.signcolumn = 'yes'
 vim.o.termguicolors = true
 vim.cmd [[
 set background=dark
-colorscheme tokyonight
+colorscheme gruvbox
 
 hi Normal guibg=NONE ctermbg=NONE
 ]]
