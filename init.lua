@@ -82,6 +82,7 @@ require('lazy').setup({
   -- luasnip
   {
     'L3MON4D3/LuaSnip',
+    build = "make install_jsregexp",
     dependencies = {
       'rafamadriz/friendly-snippets',
     }
@@ -150,6 +151,11 @@ require('lazy').setup({
   },
   {
     'github/copilot.vim'
+  },
+
+  {
+    'jedrzejboczar/possession.nvim',
+    requires = { 'nvim-lua/plenary.nvim' },
   }
 
 })
@@ -243,7 +249,7 @@ nmap <leader>o :setlocal spell! spelllang=en_us<CR>
 " e.g. if you change the order of buffers :bnext and :bprevious will not respect the custom ordering
 nnoremap <leader>] :bn<CR>
 nnoremap <leader>[ :bp<CR>
-nnoremap <silent><leader>bd :bd<CR>
+nnoremap <silent><leader>bd :bn<bar>bd!#<CR>
 " moving text
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
@@ -334,7 +340,8 @@ require('telescope').setup {
           ["D"] = 'delete_buffer'
         }
 
-      }
+      },
+      sort_lastused = true,
     }
 
   }
@@ -512,14 +519,13 @@ require('lspconfig').pyright.setup {
 }
 
 -- luasnip setup
+--
+local ls = require('luasnip')
 
 map('i', '<C-e>', function()
-  if require('luasnip').expand_or_jumpable() then
-    return require('luasnip').lsp_expand_or_jump()
-  else
-    return '<Tab>'
-  end
+  ls.expand()
 end)
+
 
 -- Setup nvim-cmp.
 local luasnip = require 'luasnip'
@@ -614,26 +620,26 @@ end
 vim.fn.sign_define('DapBreakpoint',{ text ='🟥', texthl ='', linehl ='', numhl =''})
 vim.fn.sign_define('DapStopped',{ text ='▶️', texthl ='', linehl ='', numhl =''})
 
-vim.keymap.set('n', '<leader>dq', function() require('dap').terminate() end)
-vim.keymap.set('n', '<leader>dc', function() require('dap').continue() end)
-vim.keymap.set('n', '<leader>do', function() require('dap').step_over() end)
-vim.keymap.set('n', '<leader>di', function() require('dap').step_into() end)
-vim.keymap.set('n', '<leader>du', function() require('dap').step_out() end)
-vim.keymap.set('n', '<Leader>db', function() require('dap').toggle_breakpoint() end)
--- vim.keymap.set('n', '<Leader>lp', function() require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end)
-vim.keymap.set('n', '<Leader>dr', function() require('dap').repl.open() end)
-vim.keymap.set('n', '<Leader>dl', function() require('dap').run_last() end)
-vim.keymap.set({'n', 'v'}, '<Leader>dh', function()
+map('n', '<leader>dq', function() dap.terminate() end)
+map('n', '<leader>dc', function() dap.continue() end)
+map('n', '<leader>do', function() dap.step_over() end)
+map('n', '<leader>di', function() dap.step_into() end)
+map('n', '<leader>du', function() dap.step_out() end)
+map('n', '<Leader>db', function() dap.toggle_breakpoint() end)
+-- map('n', '<Leader>lp', function() dap.set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end)
+map('n', '<Leader>dr', function() dap.repl.open() end)
+map('n', '<Leader>dl', function() dap.run_last() end)
+map({'n', 'v'}, '<Leader>dh', function()
   require('dap.ui.widgets').hover()
 end)
-vim.keymap.set({'n', 'v'}, '<Leader>dp', function()
+map({'n', 'v'}, '<Leader>dp', function()
   require('dap.ui.widgets').preview()
 end)
-vim.keymap.set('n', '<Leader>df', function()
+map('n', '<Leader>df', function()
   local widgets = require('dap.ui.widgets')
   widgets.centered_float(widgets.frames)
 end)
-vim.keymap.set('n', '<Leader>ds', function()
+map('n', '<Leader>ds', function()
   local widgets = require('dap.ui.widgets')
   widgets.centered_float(widgets.scopes)
 end)
@@ -695,10 +701,10 @@ iron.setup {
 }
 
 -- iron also has a list of commands, see :h iron-commands for all available commands
-vim.keymap.set('n', '<leader>rs', '<cmd>IronRepl<cr>')
-vim.keymap.set('n', '<leader>rr', '<cmd>IronRestart<cr>')
-vim.keymap.set('n', '<leader>rf', '<cmd>IronFocus<cr>')
-vim.keymap.set('n', '<leader>rh', '<cmd>IronHide<cr>')
+map('n', '<leader>rs', function() iron.repl() end)
+map('n', '<leader>rr', function() iron.restart() end)
+map('n', '<leader>rf', function() iron.focus() end)
+map('n', '<leader>rh', function() iron.hide() end)
 
 require("neotest").setup({
   adapters = {
@@ -708,13 +714,16 @@ require("neotest").setup({
   },
 })
 
+map('n', '<leader>Tr', function() require("neotest").run.run() end)
+map('n', '<leader>Tf', function() require("neotest").run.run(vim.fn.expand("%")) end)
+map('n', '<leader>Td', function() require("neotest").run.run({strategy = "dap"}) end)
+map('n', '<leader>Tq', function() require("neotest").run.stop() end)
+map('n', '<leader>Ta', function() require("neotest").run.attach() end)
 
+-- Session management
 
-
-vim.keymap.set('n', '<leader>Tr', function() require("neotest").run.run() end)
-vim.keymap.set('n', '<leader>Tf', function() require("neotest").run.run(vim.fn.expand("%")) end)
-vim.keymap.set('n', '<leader>Td', function() require("neotest").run.run({strategy = "dap"}) end)
-vim.keymap.set('n', '<leader>Tq', function() require("neotest").run.stop() end)
-vim.keymap.set('n', '<leader>Ta', function() require("neotest").run.attach() end)
+require('possession').setup {}
+require('telescope').load_extension('possession')
+map('n', '<leader>pl', function() require('telescope').extensions.possession.list()  end)
 
 -- vim: ts=2 sts=2 sw=2 et
