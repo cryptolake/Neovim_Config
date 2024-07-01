@@ -542,7 +542,7 @@ cmp.setup {
   mapping = {
     ['<C-p>'] = cmp.mapping.select_prev_item(),
     ['<C-n>'] = cmp.mapping.select_next_item(),
-    ['C-y'] = cmp.mapping.confirm({
+    ['<CR>'] = cmp.mapping.confirm({
       select = true,
     }),
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
