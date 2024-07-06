@@ -722,8 +722,16 @@ map('n', '<leader>Ta', function() require("neotest").run.attach() end)
 
 -- Session management
 
-require('possession').setup {}
+require('possession').setup {
+    plugins = {
+        delete_hidden_buffers = {
+            force = function(buf) return vim.api.nvim_buf_get_option(buf, 'buftype') == 'terminal' end
+        }
+    },
+}
 require('telescope').load_extension('possession')
 map('n', '<leader>pl', function() require('telescope').extensions.possession.list()  end)
+map('n', '<leader>ps', function() vim.cmd('PossessionSave') end)
+map('n', '<leader>pq', function() vim.cmd('PossessionClose') end)
 
 -- vim: ts=2 sts=2 sw=2 et
