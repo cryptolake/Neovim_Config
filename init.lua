@@ -149,9 +149,6 @@ require('lazy').setup({
   {
     'mfussenegger/nvim-lint'
   },
-  {
-    'github/copilot.vim'
-  },
 
   {
     'jedrzejboczar/possession.nvim',
@@ -451,7 +448,7 @@ require('mason').setup()
 
 -- Enable the following language servers
 -- Feel free to add/remove any LSPs that you want here. They will automatically be installed
-local servers = { 'clangd', 'pyright', 'tsserver', 'lua_ls', 'rust_analyzer' }
+local servers = { 'clangd', 'pyright', 'ts_ls', 'lua_ls', 'rust_analyzer', 'zls' }
 
 -- Ensure the servers above are installed
 require('mason-lspconfig').setup {
@@ -516,6 +513,20 @@ require('lspconfig').pyright.setup {
       }
     }
   },
+}
+
+require('lspconfig').zls.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  settings = {
+    zig = {
+      inlayHints = true,
+      diagnostics = {
+        enable = true,
+      }
+    }
+  },
+
 }
 
 -- luasnip setup
@@ -726,12 +737,13 @@ require('possession').setup {
     plugins = {
         delete_hidden_buffers = {
             force = function(buf) return vim.api.nvim_buf_get_option(buf, 'buftype') == 'terminal' end
-        }
+      },
+      delete_buffers = true,
     },
 }
-require('telescope').load_extension('possession')
-map('n', '<leader>pl', function() require('telescope').extensions.possession.list()  end)
-map('n', '<leader>ps', function() vim.cmd('PossessionSave') end)
-map('n', '<leader>pq', function() vim.cmd('PossessionClose') end)
 
+require('telescope').load_extension('possession')
+map('n', '<leader>pp', function() require('telescope').extensions.possession.list()  end)
+map('n', '<leader>ps', function() vim.cmd('PossessionSave') end)
+map('n', '<leader>pq', function() vim.cmd('wa | qall') end)
 -- vim: ts=2 sts=2 sw=2 et
